@@ -84,7 +84,7 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
                         yaxlabel='Freq', params=None,
                         ranking=None, 
                         freq_low=1250.09765625, 
-                        freq_up=1549.90234375, tab=None, DMgal=np.inf):
+                        freq_up=1549.90234375, tab=None, sb=False, DMgal=np.inf):
     """ Plot single-pulse triggers ranked by the
     classifier's assigned probability.
 
@@ -210,9 +210,15 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
             print("Wrong data input shape")
             return 
 
-        ax.set_title('p:%0.2f dm:%d \n t:%0.1fs s/n:%0.1f wind=%0.1f ms TAB=%d' % \
-            (prob_arr[ranking[ii]], dms[ranking[ii]], \
-                tt[ranking[ii]], snr[ranking[ii]], 1000*twindow_sec[ii], tab[ranking[ii]]), fontsize=7)
+        if sb:
+            ax.set_title('p:%0.2f dm:%d \n t:%0.1fs s/n:%0.1f wind=%0.1f ms SB=%d' % \
+                (prob_arr[ranking[ii]], dms[ranking[ii]], \
+                    tt[ranking[ii]], snr[ranking[ii]], 1000*twindow_sec[ii], tab[ranking[ii]]), fontsize=7)
+
+        else:
+            ax.set_title('p:%0.2f dm:%d \n t:%0.1fs s/n:%0.1f wind=%0.1f ms TAB=%d' % \
+                (prob_arr[ranking[ii]], dms[ranking[ii]], \
+                    tt[ranking[ii]], snr[ranking[ii]], 1000*twindow_sec[ii], tab[ranking[ii]]), fontsize=7)
 
         if ii % w == 0:
             ax.set_ylabel(yaxlabel, fontsize=14)
@@ -226,7 +232,7 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
 
 def plot_multiple_ranked(argin, nside=5, fnfigout='ranked_trig', 
                          ascending=True, params=None, 
-                         ranked_ind=None, yaxlabel='Freq', tab=None, DMgal=np.inf):
+                         ranked_ind=None, yaxlabel='Freq', tab=None, sb=False, DMgal=np.inf):
     """ Generate multiple multi-panel figures 
     using plot_ranked_trigger
 
@@ -286,7 +292,7 @@ def plot_multiple_ranked(argin, nside=5, fnfigout='ranked_trig',
                             h=nside, w=nside, ascending=ascending, 
                             outname=fnfigout_, cmap=None, 
                             params=params_sub, 
-                            ranking=range(len(ind_sub)), yaxlabel=yaxlabel, tab=tab_sub, DMgal=DMgal)
+                            ranking=range(len(ind_sub)), yaxlabel=yaxlabel, tab=tab_sub, sb=sb, DMgal=DMgal)
 
     return ind
 

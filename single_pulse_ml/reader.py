@@ -21,7 +21,7 @@ except:
     pass
 
 
-def read_hdf5(fn, return_tab=False):
+def read_hdf5(fn, return_tab=False, return_sb=False):
     """ Read in data from .hdf5 file 
     containing dynamic spectra, dm-time array, 
     and data labels  
@@ -63,7 +63,15 @@ def read_hdf5(fn, return_tab=False):
         print('tab number not there')
         tab = -1*np.ones([len(data_freq)])
 
-    if return_tab:
+    try: 
+        sb = f['sb'][:]
+    except:
+        print('sb number not there')
+        sb = -1*np.ones([len(data_freq)])
+
+    if return_sb:
+        return data_freq, y, data_dm, data_mb, params, sb
+    elif return_tab:
         return data_freq, y, data_dm, data_mb, params, tab
     else:
         return data_freq, y, data_dm, data_mb, params
