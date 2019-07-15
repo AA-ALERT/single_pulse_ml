@@ -22,7 +22,7 @@ def classify(data, model, save_ranked=False,
              plot_ranked=False, prob_threshold=0.5,
              fnout='ranked', nside=5, params=None,
              ranked_ind=None, ind_frb=None, 
-             yaxlabel='Freq', tab=None, DMgal=np.inf):
+             yaxlabel='Freq', tab=None, sb=False, DMgal=np.inf):
 
     if ranked_ind is not None:
         prob_threshold = 0.0
@@ -119,7 +119,10 @@ def classify(data, model, save_ranked=False,
         g.create_dataset('frb_index', data=ind_frb)
         g.create_dataset('probability', data=y_pred_prob)
         g.create_dataset('params', data=params)
-        g.create_dataset('tab', data=tab[ind_frb])
+        if sb:
+            g.create_dataset('sb', data=tab[ind_frb])
+        else:
+            g.create_dataset('tab', data=tab[ind_frb])
         g.close()
         print("\nSaved them and all probabilities to: \n%s" % fnout_ranked)
 
@@ -130,13 +133,13 @@ def classify(data, model, save_ranked=False,
             ranked_ind_ = plot_tools.plot_multiple_ranked(argtup, nside=nside, \
                                             fnfigout=fnout, ascending=False, 
                                             params=params[ind_frb], ranked_ind=ranked_ind,
-                                                          yaxlabel=yaxlabel, tab=tab[ind_frb], DMgal=DMgal)
+                                                          yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, DMgal=DMgal)
         else:
             print('plotting')
             ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, nside=nside, \
                                             fnfigout=fnout, ascending=False,
                                             params=params[ind_frb], ranked_ind=ranked_ind,
-                                                          yaxlabel=yaxlabel, tab=tab[ind_frb], DMgal=DMgal)
+                                                          yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, DMgal=DMgal)
 
         return ind_frb, ranked_ind_
 
@@ -147,7 +150,13 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     print("Using datafile %s" % fn_data)
     print("Using keras model in %s" % fn_model_freq)
 
-    data_freq, y, data_dm, data_mb, params, tab = reader.read_hdf5(fn_data, return_tab=True)
+    if options.sb:
+        return_sb = True
+        return_tab = False
+    else:
+        return_sb = False
+        return_tab = True
+    data_freq, y, data_dm, data_mb, params, beam = reader.read_hdf5(fn_data, return_tab=return_tab, return_sb=return_sb)
     
     dms = params[:, 1]
     #ind_dm = np.where((dms>=dm_min) & (dms<dm_max))[0]
@@ -161,7 +170,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     params = params[ind_dm]
     data_freq = data_freq[ind_dm]
     y = y[ind_dm]
-    tab = tab[ind_dm]
+    beam = beam[ind_dm]
 
     NFREQ = data_freq.shape[1]
     NTIME = data_freq.shape[2]
@@ -183,7 +192,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
                              plot_ranked=options.plot_ranked, 
                              prob_threshold=options.prob_threshold,
                              fnout=fn_fig_out, params=params, 
-                                        nside=options.nside, yaxlabel='Freq', tab=tab, DMgal=DMgal)
+                                        nside=options.nside, yaxlabel='Freq', tab=beam, sb=options.sb, DMgal=DMgal)
 
     if len(ind_frb)==0:
         return
@@ -269,6 +278,9 @@ if __name__=="__main__":
     parser.add_option('--DMgal', dest='DMgal', type='float', \
                        help="expected DM contribution from Milky Way",\
                        default=np.inf)
+
+    parser.add_option('--synthesized_beams', dest='sb', action='store_true',
+                       help="Use synthesized beams instead of TABs")
 
     options, args = parser.parse_args()
 
