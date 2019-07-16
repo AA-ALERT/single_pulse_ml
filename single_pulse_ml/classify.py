@@ -135,15 +135,14 @@ def classify(data, model, save_ranked=False,
                                             params=params[ind_frb], ranked_ind=ranked_ind,
                                                           yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, DMgal=DMgal)
         else:
-            print('plotting')
             ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, nside=nside, \
                                             fnfigout=fnout, ascending=False,
                                             params=params[ind_frb], ranked_ind=ranked_ind,
                                                           yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, DMgal=DMgal)
+    else:
+        ranked_ind_ = np.argsort(y_pred_prob)[::-1]
 
-        return ind_frb, ranked_ind_
-
-    return [],[]
+    return data, ind_frb, ranked_ind_, y_pred_prob
 
 
 def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
@@ -159,18 +158,6 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     data_freq, y, data_dm, data_mb, params, beam = reader.read_hdf5(fn_data, return_tab=return_tab, return_sb=return_sb)
     
     dms = params[:, 1]
-    #ind_dm = np.where((dms>=dm_min) & (dms<dm_max))[0]
-    ind_dm = range(len(dms))
-    
-#    print("%d of %d events have %0.1f<DM<%0.1f" % (len(ind_dm), len(params), dm_min, dm_max))
-
-    if len(ind_dm)==0:
-        return 
-
-    params = params[ind_dm]
-    data_freq = data_freq[ind_dm]
-    y = y[ind_dm]
-    beam = beam[ind_dm]
 
     NFREQ = data_freq.shape[1]
     NTIME = data_freq.shape[2]
@@ -183,56 +170,84 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
         data_freq = data_freq[..., tl:th]
 
 #    fn_fig_out = options.fnout + '_freq_time_dm%0.1f-%0.1f' % (dm_min, dm_max)
-    fn_fig_out = options.fnout + '_freq_time_dm%0.1f-%0.1f' % (dms.min(), dms.max())
+    fn_fig_out_freq = options.fnout + '_freq_time_dm%0.1f-%0.1f' % (dms.min(), dms.max())
 
     print("\nCLASSIFYING FREQ/TIME DATA\n")
 
-    ind_frb, ranked_ind_freq = classify(data_freq, fn_model_freq, 
+    data_freq, ind_frb, ranked_ind_freq, y_prob_freq = classify(data_freq, fn_model_freq, 
                              save_ranked=options.save_ranked, 
                              plot_ranked=options.plot_ranked, 
                              prob_threshold=options.prob_threshold,
-                             fnout=fn_fig_out, params=params, 
-                                        nside=options.nside, yaxlabel='Freq', tab=beam, sb=options.sb, DMgal=DMgal)
+                             fnout=fn_fig_out_freq, params=params, 
+                             nside=options.nside, yaxlabel='Freq', tab=beam, sb=options.sb, DMgal=DMgal)
+
+    print('hack')
+    data_freq[::2, 20] += 5
 
     if len(ind_frb)==0:
         return
 
     if options.fn_model_dm is not None:
         if len(data_dm)>0:
-            data_dm = data_dm[ind_dm]
-
             print("\nCLASSIFYING DM/TIME DATA\n)")
-            fn_fig_out = options.fnout + '_dm_time'
-            classify(data_dm, options.fn_model_dm, 
+            fn_fig_out_dm = options.fnout + '_dm_time'
+            print(data_dm.shape)
+            data_dm, ind_frb, ranked_ind_freq_, y_prob_dm = classify(data_dm, options.fn_model_dm, 
                      save_ranked=options.save_ranked, 
                      plot_ranked=options.plot_ranked, 
                      prob_threshold=options.prob_threshold,
-                     fnout=fn_fig_out, params=params, 
-                     nside=options.nside, ind_frb=ind_frb,
-                     ranked_ind=ranked_ind_freq, yaxlabel='DM', DMgal=DMgal)
+                     fnout=fn_fig_out_dm, params=params, 
+                     nside=options.nside, ind_frb=None,
+                     ranked_ind=None, yaxlabel='DM', DMgal=DMgal)
+            ind_remove = np.where(y_prob_dm[ind_frb]<0.95)[0]
+            ind_frb = np.delete(ind_frb, ind_remove)
+            print(data_dm.shape, data_freq.shape)
         else:
             print("No DM/time data to classify")
 
     if options.fn_model_time is not None:
         print("\nCLASSIFYING 1D TIME DATA\n)")
-        fn_fig_out = options.fnout + '_time'
+        fn_fig_out_time = options.fnout + '_time'
         classify(data_freq, options.fn_model_time, 
              save_ranked=options.save_ranked, 
              plot_ranked=options.plot_ranked, 
              prob_threshold=options.prob_threshold,
-             fnout=fn_fig_out, params=params, 
+             fnout=fn_fig_out_time, params=params, 
              nside=options.nside, ind_frb=ind_frb,
-                 ranked_ind=ranked_ind_freq, yaxlabel='', DMgal=DMgal)
+             ranked_ind=ranked_ind_freq, yaxlabel='', DMgal=DMgal)
 
     if options.fn_model_mb is not None:
-        data_mb = data_mb[ind_dm]
-
         classify(data_mb, options.fn_model_mb, 
              save_ranked=options.save_ranked, 
              plot_ranked=options.plot_ranked, 
              prob_threshold=options.prob_threshold,
              fnout=options.fnout, params=params, ind_frb=ind_frb,
-                 nside=options.nsidem, ranked_ind=ranked_ind_freq, DMgal=DMgal)
+             nside=options.nsidem, ranked_ind=ranked_ind_freq, DMgal=DMgal)
+
+    if 1==1:
+        print('Plotting')
+        if options.save_ranked is False:
+            argtup = (data_freq[ind_frb], ind_frb, y_prob_freq)
+
+            ranked_ind_ = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
+                                            fnfigout=fn_fig_out_freq, ascending=False, 
+                                                          params=params[ind_frb], ranked_ind=None,
+                                                          yaxlabel='Freq', tab=beam[ind_frb], sb=options.sb, DMgal=DMgal)
+        else:
+            fnout_ranked = options.fnout + '.hdf5'
+            ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, nside=options.nside, \
+                                            fnfigout=fn_fig_out_freq, ascending=False,
+                                            params=params[ind_frb], ranked_ind=ranked_ind_freq,
+                                            yaxlabel='Freq', tab=beam[ind_frb], sb=options.sb, DMgal=options.DMgal)
+
+        if options.fn_model_dm is not None:
+            argtup = (data_dm, ind_frb, y_prob_dm)
+            ranked_ind_two = np.argsort(y_prob_freq[ind_frb])[::-1]
+            ranked_ind_ = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
+                                                          fnfigout=fn_fig_out_dm, ascending=False,
+                                                          params=params, ranked_ind=ranked_ind_two,
+                                                          yaxlabel='DM', tab=beam, sb=options.sb, DMgal=DMgal)
+
 
 if __name__=="__main__":
     parser = optparse.OptionParser(prog="classify.py", \
@@ -282,6 +297,8 @@ if __name__=="__main__":
     parser.add_option('--synthesized_beams', dest='sb', action='store_true',
                        help="Use synthesized beams instead of TABs")
 
+    print("Needs fixin")
+    exit()
     options, args = parser.parse_args()
 
     assert len(args)==2, "Arguments are FN_DATA FN_MODEL [OPTIONS]"
