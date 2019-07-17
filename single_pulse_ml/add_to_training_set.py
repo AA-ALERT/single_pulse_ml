@@ -25,12 +25,13 @@ assert name in ['dm', 'freq'], "name must be dm or freq"
 
 data_freq_o, y_o, data_dm_o, data_mb_o, params_o = reader.read_hdf5(fn_orig)
 
+print(name)
 print("Assuming ranked output of classifier")
 g = h5py.File(fn_new,'r')
 data = g['data_frb_candidate']
-if name is 'dm':
+if name=='dm':
 	data_dm_n = data
-elif name is 'freq':
+elif name=='freq':
 	data_freq_n = data[..., 0]
 
 print(data.shape, data_freq_n.shape)
