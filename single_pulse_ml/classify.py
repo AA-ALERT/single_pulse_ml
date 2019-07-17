@@ -125,7 +125,7 @@ def classify(data, model, save_ranked=False,
         else:
             g.create_dataset('tab', data=tab[ind_frb])
         g.close()
-        print("\nSaved them and all probabilities to: \n%s" % fnout_ranked)
+        print("\nSaved data and all probabilities to: \n%s" % fnout_ranked)
 
     if plot_ranked is True:
         print('plotting')
@@ -180,7 +180,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
 
     data_freq, ind_frb, ranked_ind_freq, y_prob_freq = classify(data_freq, fn_model_freq, 
                              save_ranked=options.save_ranked, 
-                             plot_ranked=options.plot_ranked, 
+                             plot_ranked=False,
                              prob_threshold=options.prob_threshold,
                              fnout=fn_fig_out_freq, params=params, 
                              nside=options.nside, yaxlabel='Freq', tab=beam, 
