@@ -126,7 +126,7 @@ if ntrig_o_dm>0 and name=='dm':
 	f.create_dataset('labels', data=y_full)
 
 	print('\nWrote to %s' % fnout)
-	print('All new events are labelled %d\n' % np.mean(y_n))
+	print('All %d new events are labelled %d\n' % (len(y_n), np.mean(y_n)))
 
 
 	if ntrig_n_dm > 0:
