@@ -6,8 +6,9 @@ import h5py
 
 import reader
 
-if len(sys.arv) != 4:
-	print("Expected fnh5_orig [h5 file path] fnh5_new [h5 file path] label_new [0/1] name [dm/freq]")
+if len(sys.argv) != 5:
+	print("\nExpected fnh5_orig fnh5_new label_new [0/1] name [dm/freq]\n")
+        exit()
 
 fn_orig = sys.argv[1]
 fn_new = sys.argv[2]
