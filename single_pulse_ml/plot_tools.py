@@ -120,7 +120,6 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
         twindow_sec = downsample*dt*data.shape[-1]
 
         if yaxlabel=='Freq':
-            print(data.shape)
             nfreq, ntime = data.shape[1], data.shape[2]
             freqs = np.linspace(freq_low, freq_up, nfreq)
             DM0_delays = dms[None]*4.15E6*(freq_low**-2 - freqs[:, None]**-2)
@@ -290,7 +289,6 @@ def plot_multiple_ranked(argin, nside=5, fnfigout='ranked_trig',
     else:
         ind = ranked_ind
 
-    print(data_frb_candidate.shape, 'this') #hack
     ntrig = len(ind)
 
     data = data_frb_candidate[ind]
