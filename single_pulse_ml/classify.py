@@ -191,14 +191,14 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
             print("\nCLASSIFYING DM/TIME DATA\n)")
             fn_fig_out_dm = options.fnout + '_dm_time'
 
-            data_dm, ind_frb_dm, ranked_ind_freq_, y_prob_dm = classify(data_dm, \
-                     options.fn_model_dm, 
-                     save_ranked=options.save_ranked, 
-                     plot_ranked=False, 
-                     prob_threshold=options.prob_threshold,
-                     fnout=fn_fig_out_dm, params=params, 
-                     nside=options.nside, ind_frb=None,
-                     ranked_ind=None, yaxlabel='DM', DMgal=DMgal)
+            data_dm, ind_frb_dm, ranked_ind_freq_, y_prob_dm = classify(data_dm,
+                                 options.fn_model_dm, 
+                                 save_ranked=options.save_ranked, 
+                                 plot_ranked=False, 
+                                 prob_threshold=options.prob_threshold,
+                                 fnout=fn_fig_out_dm, params=params, 
+                                 nside=options.nside, ind_frb=None,
+                                 ranked_ind=None, yaxlabel='DM', DMgal=DMgal)
 
             # Remove candidates where DM/time probability is below 
             ind_remove = np.where(y_prob_dm[ind_frb]<options.prob_threshold_dm)[0]
@@ -209,13 +209,22 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     if options.fn_model_time is not None:
         print("\nCLASSIFYING 1D TIME DATA\n)")
         fn_fig_out_time = options.fnout + '_time'
-        classify(data_freq, options.fn_model_time, 
-             save_ranked=options.save_ranked, 
-             plot_ranked=options.plot_ranked, 
-             prob_threshold=options.prob_threshold,
-             fnout=fn_fig_out_time, params=params, 
-             nside=options.nside, ind_frb=ind_frb,
-             ranked_ind=ranked_ind_freq, yaxlabel='', DMgal=DMgal)
+        # classify(data_freq, options.fn_model_time, 
+        #      save_ranked=options.save_ranked, 
+        #      plot_ranked=options.plot_ranked, 
+        #      prob_threshold=options.prob_threshold,
+        #      params=params, 
+        #      nside=options.nside, ind_frb=ind_frb,
+        #      ranked_ind=ranked_ind_freq, yaxlabel='', DMgal=DMgal)
+
+        data_time, ind_frb_time, ranked_ind_freq_, y_prob_time = classify(data_time,
+                                 options.fn_model_time, 
+                                 save_ranked=options.save_ranked, 
+                                 plot_ranked=False, 
+                                 prob_threshold=options.prob_threshold,
+                                 params=params, 
+                                 nside=options.nside, ind_frb=None,
+                                 ranked_ind=None, yaxlabel='DM', DMgal=DMgal)
 
     if options.fn_model_mb is not None:
         classify(data_mb, options.fn_model_mb, 
@@ -225,7 +234,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
              fnout=options.fnout, params=params, ind_frb=ind_frb,
              nside=options.nsidem, ranked_ind=ranked_ind_freq, DMgal=DMgal)
 
-    if 1==1:
+    if options.plot_ranked is True:
         print('Plotting')
         if options.save_ranked is False:
             argtup = (data_freq[ind_frb], ind_frb, y_prob_freq)
@@ -248,13 +257,23 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
 
         if options.fn_model_dm is not None:
             argtup = (data_dm[ind_frb], ind_frb, y_prob_dm)
-            print(data_dm[ind_frb].shape, data_freq[ind_frb].shape, data_freq.shape)
-            print(ind_frb)
-            ranked_ind_two = np.argsort(y_prob_freq[ind_frb])[::-1]
+
+            ranked_ind_freq_final = np.argsort(y_prob_freq[ind_frb])[::-1]
             ranked_ind_dm = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
                                           fnfigout=fn_fig_out_dm, ascending=False,
-                                          params=params[ind_frb], ranked_ind=ranked_ind_two,
-                                                            yaxlabel='DM', tab=beam[ind_frb], sb=options.sb, 
+                                          params=params[ind_frb], ranked_ind=ranked_ind_freq_final,
+                                          yaxlabel='DM', tab=beam[ind_frb], sb=options.sb, 
+                                          DMgal=DMgal)
+
+
+        if options.fn_model_time is not None:
+            argtup = (data_time[ind_frb], ind_frb, y_prob_time)
+            
+            ranked_ind_freq_final = np.argsort(y_prob_freq[ind_frb])[::-1]
+            ranked_ind_dm = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
+                                          fnfigout=fn_fig_out_time, ascending=False,
+                                          params=params[ind_frb], ranked_ind=ranked_ind_freq_final,
+                                          yaxlabel='DM', tab=beam[ind_frb], sb=options.sb, 
                                           DMgal=DMgal)
 
 
