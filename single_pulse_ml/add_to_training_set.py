@@ -68,7 +68,7 @@ if name=='freq':
 elif name=='dm':
 	y_n = np.ones([len(data_dm_n)])*y_n_
 
-if ntrig_o_f>0 and name is 'freq':
+if ntrig_o_f>0 and name=='freq':
 	if nfreq_n>nfreq_o:
 	    print('Rebinning data in frequency')
 	    data_freq_n = data_freq_n.reshape((ntrig_n_f, nfreq_o, nfreq_n//nfreq_o) + data_freq_n.shape[2:])
@@ -103,7 +103,7 @@ if ntrig_o_f>0 and name is 'freq':
 		except:
 			print("Could not write freq/time")
 
-if ntrig_o_dm>0 and name is 'dm':
+if ntrig_o_dm>0 and name=='dm':
 	dshape = data_dm_n.shape
 	# normalize data
 	data_dm_n = data_dm_n.reshape(len(data_dm_n), -1)
