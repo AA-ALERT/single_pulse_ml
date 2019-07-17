@@ -74,6 +74,8 @@ if ntrig_o_f>0 and name=='freq':
 	    data_freq_n = data_freq_n.reshape((ntrig_n_f, nfreq_o, nfreq_n//nfreq_o) + data_freq_n.shape[2:])
 	    data_freq_n = data_freq_n.mean(2)
 	    dshape = data_freq_n.shape
+	else:
+		dshape = data_freq_n.shape
 
 	# normalize data
 	data_freq_n = data_freq_n.reshape(len(data_freq_n), -1)
