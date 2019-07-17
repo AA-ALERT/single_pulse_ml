@@ -25,14 +25,6 @@ assert name in ['dm', 'freq'], "name must be dm or freq"
 
 data_freq_o, y_o, data_dm_o, data_mb_o, params_o = reader.read_hdf5(fn_orig)
 
-print("Assuming ranked output of classifier")
-g = h5py.File(fn_new,'r')
-data = g['data_frb_candidate']
-if name is 'dm':
-	data_dm_n = data
-elif name is 'freq':
-	data_freq_n = data
-
 try:
 	print("Assuming ranked output of classifier")
 	g = h5py.File(fn_new,'r')
@@ -40,7 +32,7 @@ try:
 	if name is 'dm':
 		data_dm_n = data
 	elif name is 'freq':
-		data_freq_n = data
+		data_freq_n = data[..., 0]
 except:
 	data_freq_n, _, data_dm_n, data_mb_n, params_n = reader.read_hdf5(fn_new)
 
