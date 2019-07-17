@@ -110,8 +110,6 @@ def classify(data, model, save_ranked=False,
 
     if save_ranked is True:
         print("Need to fix the file naming")
-#        fnout_ranked = fn_data.rstrip('.hdf5') + \
-#                       'freq_time_candidates.hdf5'
 
         fnout_ranked = fnout + '.hdf5'
 
@@ -213,20 +211,13 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     if options.fn_model_time is not None:
         print("\nCLASSIFYING 1D TIME DATA\n)")
         fn_fig_out_time = options.fnout + '_time'
-        # classify(data_freq, options.fn_model_time, 
-        #      save_ranked=options.save_ranked, 
-        #      plot_ranked=options.plot_ranked, 
-        #      prob_threshold=options.prob_threshold,
-        #      params=params, 
-        #      nside=options.nside, ind_frb=ind_frb,
-        #      ranked_ind=ranked_ind_freq, yaxlabel='', DMgal=DMgal)
 
         data_time, ind_frb_time, ranked_ind_freq_, y_prob_time = classify(data_freq,
                                  options.fn_model_time, 
                                  save_ranked=options.save_ranked, 
                                  plot_ranked=False, 
                                  prob_threshold=options.prob_threshold,
-                                 params=params, 
+                                 fnout=fn_fig_out_time, params=params, 
                                  nside=options.nside, ind_frb=None,
                                  ranked_ind=None, yaxlabel='DM', DMgal=DMgal)
 
