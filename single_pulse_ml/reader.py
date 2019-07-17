@@ -43,6 +43,7 @@ def read_hdf5(fn, return_tab=False, return_sb=False):
 
     try:
         data_dm = f['data_dm_time'][:]
+        ntrig = len(data_dm)
     except:
         print("dm-time dataset not there")
         data_dm = None
@@ -69,7 +70,7 @@ def read_hdf5(fn, return_tab=False, return_sb=False):
         sb = f['sb'][:]
     except:
         print('sb number not there')
-        sb = -1*np.ones([len(data_freq)])
+        sb = -1*np.ones([ntrig])
 
     if return_sb:
         return data_freq, y, data_dm, data_mb, params, sb
