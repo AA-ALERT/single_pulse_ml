@@ -30,7 +30,7 @@ try:
 	g = h5py.File(fn_new,'r')
 	data = g['data_frb_candidate']
 	if name=='dm':
-		data_dm_n = data
+		data_dm_n = data[..., 0]
 	elif name=='freq':
 		data_freq_n = data[..., 0]
 except:
@@ -126,7 +126,7 @@ if ntrig_o_dm>0 and name=='dm':
 	f.create_dataset('labels', data=y_full)
 
 	print('\nWrote to %s' % fnout)
-	print('All events are labelled %d\n' % np.mean(y_n))
+	print('All new events are labelled %d\n' % np.mean(y_n))
 
 
 	if ntrig_n_dm > 0:
