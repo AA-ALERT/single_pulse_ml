@@ -25,24 +25,13 @@ assert name in ['dm', 'freq'], "name must be dm or freq"
 
 data_freq_o, y_o, data_dm_o, data_mb_o, params_o = reader.read_hdf5(fn_orig)
 
-print(name)
-print("Assuming ranked output of classifier")
-g = h5py.File(fn_new,'r')
-data = g['data_frb_candidate']
-if name=='dm':
-	data_dm_n = data
-elif name=='freq':
-	data_freq_n = data[..., 0]
-
-print(data.shape, data_freq_n.shape)
-
 try:
 	print("Assuming ranked output of classifier")
 	g = h5py.File(fn_new,'r')
 	data = g['data_frb_candidate']
-	if name is 'dm':
+	if name=='dm':
 		data_dm_n = data
-	elif name is 'freq':
+	elif name=='freq':
 		data_freq_n = data[..., 0]
 except:
 	data_freq_n, _, data_dm_n, data_mb_n, params_n = reader.read_hdf5(fn_new)
@@ -73,10 +62,10 @@ except:
 	ntrig_n_dm = 0 
 	ndm_n = 0
 
-if name is 'freq':
+if name=='freq':
 	# Assume all new triggers are either FP (0) or TP (1)
 	y_n = np.ones([len(data_freq_n)])*y_n_
-elif name is 'dm':
+elif name=='dm':
 	y_n = np.ones([len(data_dm_n)])*y_n_
 
 if ntrig_o_f>0 and name is 'freq':
