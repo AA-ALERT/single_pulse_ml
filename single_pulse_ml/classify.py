@@ -156,7 +156,10 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     else:
         return_sb = False
         return_tab = True
-    data_freq, y, data_dm, data_mb, params, beam = reader.read_hdf5(fn_data, return_tab=return_tab, return_sb=return_sb)
+
+    data_freq, y, data_dm, data_mb, params, beam = reader.read_hdf5(fn_data, 
+                                                    return_tab=return_tab, 
+                                                    return_sb=return_sb)
     
     dms = params[:, 1]
 
@@ -180,7 +183,8 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
                              plot_ranked=options.plot_ranked, 
                              prob_threshold=options.prob_threshold,
                              fnout=fn_fig_out_freq, params=params, 
-                             nside=options.nside, yaxlabel='Freq', tab=beam, sb=options.sb, DMgal=DMgal)
+                             nside=options.nside, yaxlabel='Freq', tab=beam, 
+                             sb=options.sb, DMgal=DMgal)
 
 
     if len(ind_frb)==0:
@@ -217,7 +221,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
         #      nside=options.nside, ind_frb=ind_frb,
         #      ranked_ind=ranked_ind_freq, yaxlabel='', DMgal=DMgal)
 
-        data_time, ind_frb_time, ranked_ind_freq_, y_prob_time = classify(data_time,
+        data_time, ind_frb_time, ranked_ind_freq_, y_prob_time = classify(data_freq,
                                  options.fn_model_time, 
                                  save_ranked=options.save_ranked, 
                                  plot_ranked=False, 
