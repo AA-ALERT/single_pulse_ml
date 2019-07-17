@@ -171,7 +171,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
         data_freq = data_freq[..., tl:th]
 
 #    fn_fig_out = options.fnout + '_freq_time_dm%0.1f-%0.1f' % (dm_min, dm_max)
-    fn_fig_out_freq = options.fnout + '_freq_time_dm%0.1f-%0.1f' % (dms.min(), dms.max())
+    fn_fig_out_freq = options.fnout + '_%0.1f-%0.1f_freq_time' % (dms.min(), dms.max())
 
     print("\nCLASSIFYING FREQ/TIME DATA\n")
 
@@ -190,7 +190,6 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
         if len(data_dm)>0:
             print("\nCLASSIFYING DM/TIME DATA\n)")
             fn_fig_out_dm = options.fnout + '_dm_time'
-            prob_threshold_dm = 0.95
 
             data_dm, ind_frb_dm, ranked_ind_freq_, y_prob_dm = classify(data_dm, \
                      options.fn_model_dm, 
@@ -202,7 +201,7 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
                      ranked_ind=None, yaxlabel='DM', DMgal=DMgal)
 
             # Remove candidates where DM/time probability is below 
-            ind_remove = np.where(y_prob_dm[ind_frb]<prob_threshold_dm)[0]
+            ind_remove = np.where(y_prob_dm[ind_frb]<options.prob_threshold_dm)[0]
             ind_frb = np.delete(ind_frb, ind_remove)
         else:
             print("No DM/time data to classify")
@@ -248,12 +247,14 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
                                             sb=options.sb, DMgal=options.DMgal)
 
         if options.fn_model_dm is not None:
-            argtup = (data_dm, ind_frb, y_prob_dm)
+            argtup = (data_dm[ind_frb], ind_frb, y_prob_dm)
+            print(data_dm[ind_frb].shape, data_freq[ind_frb].shape, data_freq.shape)
+            print(ind_frb)
             ranked_ind_two = np.argsort(y_prob_freq[ind_frb])[::-1]
             ranked_ind_dm = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
                                           fnfigout=fn_fig_out_dm, ascending=False,
-                                          params=params, ranked_ind=ranked_ind_,
-                                          yaxlabel='DM', tab=beam, sb=options.sb, 
+                                          params=params[ind_frb], ranked_ind=ranked_ind_two,
+                                                            yaxlabel='DM', tab=beam[ind_frb], sb=options.sb, 
                                           DMgal=DMgal)
 
 
@@ -277,6 +278,9 @@ if __name__=="__main__":
 
     parser.add_option('--pthresh', dest='prob_threshold', type='float', \
                         help="probability treshold", default=0.5)
+
+    parser.add_option('--pthresh_dm', dest='prob_threshold_dm', type=float,
+                      default=0.0)
 
     parser.add_option('--save_ranked', dest='save_ranked', 
                         action='store_true', \
@@ -305,8 +309,6 @@ if __name__=="__main__":
     parser.add_option('--synthesized_beams', dest='sb', action='store_true',
                        help="Use synthesized beams instead of TABs")
 
-    print("Needs fixin")
-    exit()
     options, args = parser.parse_args()
 
     assert len(args)==2, "Arguments are FN_DATA FN_MODEL [OPTIONS]"
