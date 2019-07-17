@@ -239,16 +239,6 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
                                             params=params[ind_frb], ranked_ind=None,
                                             yaxlabel='Freq', tab=beam[ind_frb], 
                                             sb=options.sb, DMgal=DMgal)
-        # else:
-        #     fnout_ranked = options.fnout + '.hdf5'
-        #     ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, \
-        #                                     nside=options.nside, 
-        #                                     fnfigout=fn_fig_out_freq, 
-        #                                     ascending=False,
-        #                                     params=params[ind_frb], 
-        #                                     ranked_ind=None,
-        #                                     yaxlabel='Freq', tab=beam[ind_frb], 
-        #                                     sb=options.sb, DMgal=options.DMgal)
 
         if options.fn_model_dm is not None:
             argtup = (data_dm[ind_frb], ind_frb, y_prob_dm)
