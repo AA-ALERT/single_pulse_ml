@@ -240,24 +240,24 @@ def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
 
     if options.plot_ranked is True:
         print('Plotting')
-        if options.save_ranked is False:
-            argtup = (data_freq[ind_frb], ind_frb, y_prob_freq)
+        #if options.save_ranked is False:
+        argtup = (data_freq[ind_frb], ind_frb, y_prob_freq)
 
-            ranked_ind_ = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
+        ranked_ind_ = plot_tools.plot_multiple_ranked(argtup, nside=options.nside, \
                                             fnfigout=fn_fig_out_freq, ascending=False, 
                                             params=params[ind_frb], ranked_ind=None,
                                             yaxlabel='Freq', tab=beam[ind_frb], 
                                             sb=options.sb, DMgal=DMgal)
-        else:
-            fnout_ranked = options.fnout + '.hdf5'
-            ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, \
-                                            nside=options.nside, 
-                                            fnfigout=fn_fig_out_freq, 
-                                            ascending=False,
-                                            params=params[ind_frb], 
-                                            ranked_ind=None,
-                                            yaxlabel='Freq', tab=beam[ind_frb], 
-                                            sb=options.sb, DMgal=options.DMgal)
+        # else:
+        #     fnout_ranked = options.fnout + '.hdf5'
+        #     ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, \
+        #                                     nside=options.nside, 
+        #                                     fnfigout=fn_fig_out_freq, 
+        #                                     ascending=False,
+        #                                     params=params[ind_frb], 
+        #                                     ranked_ind=None,
+        #                                     yaxlabel='Freq', tab=beam[ind_frb], 
+        #                                     sb=options.sb, DMgal=options.DMgal)
 
         if options.fn_model_dm is not None:
             argtup = (data_dm[ind_frb], ind_frb, y_prob_dm)
