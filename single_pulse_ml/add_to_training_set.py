@@ -15,6 +15,8 @@ fn_new = sys.argv[2]
 y_n_ = np.int(sys.argv[3])
 name = sys.argv[4]
 
+assert name in ['dm', 'freq'], "name must be dm or freq"
+
 # fn_orig = './data/20190712-20068-freqtime.hdf5'
 # fn_orig = './data/20190712-20068-dmtime.hdf5'
 # fn_new = '/home/arts/software/ARTS-obs/external/arts-analysis/Crab/data/data_sb00_36_full.hdf5'
@@ -22,7 +24,17 @@ name = sys.argv[4]
 # y_n_ = 1
 
 data_freq_o, y_o, data_dm_o, data_mb_o, params_o = reader.read_hdf5(fn_orig)
-data_freq_n, _, data_dm_n, data_mb_n, params_n = reader.read_hdf5(fn_new)
+
+try:
+	print("Assuming ranked output of classifier")
+	g = h5py.File(fn_new,'r')
+	data = g['data_frb_candidate']
+	if name is 'dm':
+		data_dm_n = data
+	elif name is 'freq':
+		data_freq_n = data
+except:
+	data_freq_n, _, data_dm_n, data_mb_n, params_n = reader.read_hdf5(fn_new)
 
 try:
 	ntrig_o_f = len(data_freq_o)
