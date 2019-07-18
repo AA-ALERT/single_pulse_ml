@@ -90,7 +90,7 @@ if ntrig_o_f>0 and name=='freq':
 	y_full = np.concatenate([y_o, y_n])
 
 	currentDate = date.today()
-	fnout = './data/' + currentDate.strftime('%Y%-m%-d') + '-freqtime.hdf5'
+	fnout = './data/' + currentDate.strftime('%Y%-m%-d-%H') + '-freqtime.hdf5'
 
 	f = h5py.File(fnout, 'w')
 	f.create_dataset('labels', data=y_full)
@@ -120,7 +120,7 @@ if ntrig_o_dm>0 and name=='dm':
 	y_full = np.concatenate([y_o, y_n])
 
 	currentDate = date.today()
-	fnout = './data/' + currentDate.strftime('%Y%-m%-d') + '-dmtime.hdf5'
+	fnout = './data/' + currentDate.strftime('%Y%-m%-d-%H') + '-dmtime.hdf5'
 
 	f = h5py.File(fnout, 'w')
 	f.create_dataset('labels', data=y_full)
@@ -128,10 +128,10 @@ if ntrig_o_dm>0 and name=='dm':
 	print('\nWrote to %s' % fnout)
 	print('All %d new events are labelled %d\n' % (len(y_n), np.mean(y_n)))
 
-
 	if ntrig_n_dm > 0:
 		try:
 			f.create_dataset('data_dm_time', data=data_dm_full)
+			f.create_dataset('data_freq_time', data=np.random.normal(0,1,data_dm_full.shape))
 		except:
 			print("Could not write dm/time")
 
