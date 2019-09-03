@@ -23,7 +23,7 @@ def classify(data, model, save_ranked=False,
              fnout='ranked', nside=5, params=None,
              ranked_ind=None, ind_frb=None, 
              yaxlabel='Freq', tab=None, sb=False, DMgal=np.inf,
-             ):
+             known_src=None):
 
     if ranked_ind is not None:
         prob_threshold = 0.0
@@ -132,12 +132,14 @@ def classify(data, model, save_ranked=False,
             ranked_ind_ = plot_tools.plot_multiple_ranked(argtup, nside=nside, \
                                             fnfigout=fnout, ascending=False, 
                                             params=params[ind_frb], ranked_ind=ranked_ind,
-                                            yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, DMgal=DMgal)
+                                            yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, 
+                                            DMgal=DMgal, known_src=known_src)
         else:
             ranked_ind_ = plot_tools.plot_multiple_ranked(fnout_ranked, nside=nside, \
                                             fnfigout=fnout, ascending=False,
                                             params=params[ind_frb], ranked_ind=ranked_ind,
-                                            yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, DMgal=DMgal)
+                                            yaxlabel=yaxlabel, tab=tab[ind_frb], sb=sb, 
+                                            DMgal=DMgal, known_src=known_src)
     else:
         ranked_ind_ = np.argsort(y_pred_prob)[::-1]
 

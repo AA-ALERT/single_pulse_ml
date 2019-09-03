@@ -84,7 +84,8 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
                         yaxlabel='Freq', params=None,
                         ranking=None, 
                         freq_low=1250.09765625, 
-                        freq_up=1549.90234375, tab=None, sb=False, DMgal=np.inf):
+                        freq_up=1549.90234375, tab=None, sb=False, 
+                        DMgal=np.inf, known_src=None):
     """ Plot single-pulse triggers ranked by the
     classifier's assigned probability.
 
@@ -165,7 +166,9 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
 #        
 #        plt.savefig('bing.pdf')
 
-    known_src = np.ones(len(params))
+    if known_src is None:
+        known_src = np.zeros(len(params))
+        
     for ii, ax in enumerate(np.concatenate(axes)):
         if ii>=len(prob_arr):
             ax.axis('off')
