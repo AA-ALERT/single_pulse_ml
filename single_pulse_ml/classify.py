@@ -145,6 +145,29 @@ def classify(data, model, save_ranked=False,
 
     return data, ind_frb, ranked_ind_, y_pred_prob
 
+def check_if_src_known(dms, RAs, Decs, fn_known_src, 
+                       angular_thresh=10., dm_thresh=30.0):
+    """ Function to check if candidates are 
+    known FRBs (or potentially pulsars).
+
+    """ 
+    data = np.loadtxt(fn_known_src)
+    RA_src_arr, Dec_src_arr, dm_src_arr = data[:, 0], data[:, 1], data[:, 2]
+    n_src = len(RA_src_arr)
+
+    known_src = np.zeros([len(dms)])
+
+    for ii in range(n_src):
+        RA_src = RA_src_arr[ii]
+        Dec_src = Dec_src_arr[ii]
+        dm_src = dm_src_arr[ii]
+
+        dist = np.sqrt((RA_src-RAs)**2 + (Dec_src-Decs)**2)# calculate distance on sky 
+        # check if pointing is within 10 degrees of known source 
+        ind = np.where((dist<angular_thresh) & (np.abs(dms-dm_src)<dm_thresh))[0]
+        known_src[ind] = 1 
+
+    return known_src
 
 def run_main(fn_data, fn_model_freq, options, DMgal=np.inf):
     print("Using datafile %s" % fn_data)
