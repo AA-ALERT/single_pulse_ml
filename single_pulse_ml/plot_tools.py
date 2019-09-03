@@ -165,7 +165,7 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
 #        
 #        plt.savefig('bing.pdf')
 
-#    for ii in range(min(h*w, len(prob_arr))):
+    known_src = np.ones(len(params))
     for ii, ax in enumerate(np.concatenate(axes)):
         if ii>=len(prob_arr):
             ax.axis('off')
@@ -191,6 +191,9 @@ def plot_ranked_trigger(data, prob_arr, h=6, w=6,
 
                 if dms[ii]>DMgal:
                     plt.setp(ax.spines.values(), color='red', linewidth=2, alpha=0.85)
+                if known_src[ii]==1:
+                    plt.setp(ax.spines.values(), color='orange', linewidth=3, alpha=0.85)
+
 
             elif yaxlabel=='DM':
 #                extent = [times[0, ii], times[-1, ii], freq_low, freq_up]
